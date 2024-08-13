@@ -1,0 +1,26 @@
+{
+	"GET /api": {
+		"description": "serves up a json representation of all the available endpoints of the api"
+	},
+	"GET /api/users": {
+		"description": "serves up an array of all registered users",
+		"exampleResponse": {
+			"users": [
+				{
+					"_id": "66bb5ea7136f48e2c37a3849",
+					"username": "guy",
+					"password": "pword",
+					"created_at": "2024-08-13T13:24:55.802Z",
+					"__v": 0
+				},
+				{
+					"_id": "66bb5ee21efb4b27d9282df2",
+					"username": "guy2",
+					"password": "pword",
+					"created_at": "2024-08-13T13:25:54.070Z",
+					"__v": 0
+				}
+			]
+		}
+	}
+}

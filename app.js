@@ -4,26 +4,28 @@ const { User } = require("./models");
 require("dotenv").config();
 const app = express();
 app.use(express.json());
+const endpoints = require("./endpoints.json");
 
-app.get("/", async (req, res) => {
-	return res.json({ message: "Hello, World ✌️" });
+app.get("/api", async (req, res) => {
+	return res.json(endpoints);
 });
 
-app.get("/users", async (req, res) => {
+app.get("/api/users", async (req, res) => {
 	try {
 		const users = await User.find();
-		console.log("users found");
-		res.status(200).json(users);
+		res.status(200).json({ users: users });
 	} catch (error) {
 		res.status(500).json({ error: "An error occurred fetching users" });
 	}
 });
 
-app.post("/users", async (req, res) => {
+app.post("/api/users", async (req, res) => {
 	const newUser = new User({ ...req.body });
 	const insertedUser = await newUser.save();
 	return res.status(201).json(insertedUser);
 });
+
+module.exports = app;
 
 const start = async () => {
 	try {
@@ -35,4 +37,6 @@ const start = async () => {
 	}
 };
 
-start();
+if (require.main === module) {
+	start();
+}
