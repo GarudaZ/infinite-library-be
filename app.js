@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { User } = require("./models");
+const { User, Book } = require("./models");
 require("dotenv").config();
 const app = express();
 app.use(express.json());
@@ -19,10 +19,26 @@ app.get("/api/users", async (req, res) => {
 	}
 });
 
+app.get("/api/users/:id", async (req, res) => {
+	const { id } = req.params;
+	try {
+		const user = await User.findById(id);
+		res.status(200).json({ user: user });
+	} catch (error) {
+		res.status(500).json({ error: "An error occurred fetching users" });
+	}
+});
+
 app.post("/api/users", async (req, res) => {
 	const newUser = new User({ ...req.body });
 	const insertedUser = await newUser.save();
 	return res.status(201).json(insertedUser);
+});
+
+app.post("/api/books", async (req, res) => {
+	const newBook = new Book({ ...req.body });
+	const insertedBook = await newBook.save();
+	return res.status(201).json({ added_book: insertedBook });
 });
 
 module.exports = app;

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema(
 	{
 		username: { type: String, required: true, unique: true },
@@ -10,4 +11,20 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = { User };
+const bookSchema = new mongoose.Schema(
+	{
+		title: { type: String, required: true },
+		author: { type: String, required: true },
+		isbn: { type: String, required: true, unique: true },
+		published: { type: Date, required: true },
+		publisher: { type: String, required: true },
+		genres: { type: [String], required: true },
+		cover: { type: String, required: true },
+		created_at: { type: Date, default: Date.now },
+	},
+	{ collection: "Books" }
+);
+
+const Book = mongoose.model("Book", bookSchema);
+
+module.exports = { User, Book };
