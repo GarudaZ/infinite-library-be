@@ -73,3 +73,20 @@ describe.skip("POST /api/books", () => {
 		expect(typeof response.body.added_book.cover).toBe("string");
 	});
 });
+describe("GET /api/books", () => {
+	it("returns an array of books", async () => {
+		const response = await request(app).get("/api/books").expect(200);
+		expect(response.body).toHaveProperty("books");
+		expect(response.body.books).toBeInstanceOf(Array);
+		response.body.books.forEach((book) => {
+			expect(typeof book.title).toBe("string");
+			expect(typeof book.author).toBe("string");
+			expect(typeof book.isbn).toBe("string");
+			expect(typeof book.published).toBe("string");
+			expect(typeof book.publisher).toBe("string");
+			expect(book.genres).toBeInstanceOf(Array);
+			expect(book.genres.length).toBeGreaterThan(0);
+			expect(typeof book.cover).toBe("string");
+		});
+	});
+});

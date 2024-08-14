@@ -10,3 +10,11 @@ Testing using Jest.
 
 npm test
 ```
+
+## Local Server
+
+Start the local server using:
+
+```bash
+node app.js
+```

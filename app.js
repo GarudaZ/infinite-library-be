@@ -35,6 +35,15 @@ app.post("/api/users", async (req, res) => {
 	return res.status(201).json(insertedUser);
 });
 
+app.get("/api/books", async (req, res) => {
+	try {
+		const books = await Book.find();
+		res.status(200).json({ books: books });
+	} catch (error) {
+		res.status(500).json({ error: "An error occurred fetching users" });
+	}
+});
+
 app.post("/api/books", async (req, res) => {
 	const newBook = new Book({ ...req.body });
 	const insertedBook = await newBook.save();
