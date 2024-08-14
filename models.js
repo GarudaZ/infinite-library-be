@@ -27,4 +27,17 @@ const bookSchema = new mongoose.Schema(
 
 const Book = mongoose.model("Book", bookSchema);
 
-module.exports = { User, Book };
+const shelfSchema = new mongoose.Schema({
+	user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+	name: { type: String, required: true },
+	books: [
+		{
+			book_id: { type: mongoose.SchemaType.Types.ObjectId, required: true },
+			added_at: { type: Date },
+		},
+	],
+	created_at: { type: Date, default: Date.now },
+});
+
+const Shelf = mongoose.model("Shelf", shelfSchema);
+module.exports = { User, Book, Shelf };

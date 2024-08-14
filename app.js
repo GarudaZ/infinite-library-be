@@ -29,6 +29,16 @@ app.get("/api/users/:id", async (req, res) => {
 	}
 });
 
+app.get("/api/users/:id/shelves", async (req, res) => {
+	const { id } = req.params;
+	try {
+		const user = await User.findById(id);
+		res.status(200).json({ user: user });
+	} catch (error) {
+		res.status(500).json({ error: "An error occurred fetching users" });
+	}
+});
+
 app.post("/api/users", async (req, res) => {
 	const newUser = new User({ ...req.body });
 	const insertedUser = await newUser.save();
