@@ -107,6 +107,7 @@ describe("POST /api/books", () => {
 		expect(typeof response.body.added_book.cover).toBe("string");
 	});
 });
+
 describe("GET /api/books", () => {
 	it("returns an array of books", async () => {
 		const response = await request(app).get("/api/books").expect(200);
@@ -124,7 +125,7 @@ describe("GET /api/books", () => {
 		});
 	});
 });
-describe("POST /api/:id/shelves", () => {
+describe("POST /api/users/:id/shelves", () => {
 	it("returns 201 status code and returns the JSON of the shelf add to the user", async () => {
 		const newUser = new User({
 			username: "testuser",
@@ -141,7 +142,7 @@ describe("POST /api/:id/shelves", () => {
 		};
 
 		const response = await request(app)
-			.post(`/api/${savedUser._id}/shelves`)
+			.post(`/api/users/${savedUser._id}/shelves`)
 			.send(newShelf)
 			.expect(201);
 		expect(response.body).toHaveProperty("added_shelf");
@@ -152,8 +153,8 @@ describe("POST /api/:id/shelves", () => {
 	});
 });
 
-describe.only("PATCH /api/shelves/:shelfId", () => {
-	it("returns 201 status code and returns the JSON of the book added to the shelf", async () => {
+describe("PATCH /api/shelves/:shelfId", () => {
+	it("returns 200 status code and returns the JSON of the book added to the shelf", async () => {
 		const newUser = new User({
 			username: "testuser",
 			password: "securepassword",
@@ -203,7 +204,15 @@ describe.only("PATCH /api/shelves/:shelfId", () => {
 	});
 });
 
-//get all shelves populated with books
-// describe('GET /api/:id', () => {
-
-// });
+//get all shelves populated with books return combined
+describe.only("GET /api/users/:id/shelves/books", () => {
+	it("returns 200 status and all the shelves and books from the user", async () => {
+		const response = await request(app)
+			.get("/api/users/:id/shelves/books")
+			.expect(200);
+		expect(response.body).toHaveProperty("shelves");
+		response.body.shelves.forEach((shelf) => {
+			expect(shelf).toHaveProperty("books");
+		});
+	});
+});

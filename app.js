@@ -60,7 +60,7 @@ app.post("/api/books", async (req, res) => {
 	return res.status(201).json({ added_book: insertedBook });
 });
 
-app.post("/api/:id/shelves", async (req, res) => {
+app.post("/api/users/:id/shelves", async (req, res) => {
 	const newShelf = new Shelf({ ...req.body });
 	const insertedShelf = await newShelf.save();
 	return res.status(201).json({ added_shelf: insertedShelf });
