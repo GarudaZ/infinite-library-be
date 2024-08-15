@@ -3,7 +3,7 @@ const app = require("../app");
 const endpoints = require("../endpoints.json");
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
-const { User } = require("../models");
+const { User, Shelf } = require("../models");
 
 require("dotenv").config();
 
@@ -151,3 +151,52 @@ describe("POST /api/:id/shelves", () => {
 		expect(response.body.added_shelf.books).toBeInstanceOf(Array);
 	});
 });
+
+describe.only("PATCH /api/shelves/:shelfId", () => {
+	it("returns 201 status code and returns the JSON of the book added to the shelf", async () => {
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
+
+		const newShelf = new Shelf({
+			user_id: savedUser._id,
+			name: "testshelf",
+			books: [],
+		});
+
+		const savedShelf = await newShelf.save();
+
+		const newBook = {
+			title: "The Hitchhiker's Guide to the Galaxy",
+			author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		};
+
+		const response = await request(app)
+			.post(`/api/shelves/${savedShelf._id}`)
+			.send(newBook)
+			.expect(201);
+		expect(response.body).toHaveProperty("updated_shelf");
+		expect(response.body.updated_shelf.user_id).toEqual(
+			savedUser._id.toString()
+		);
+
+		expect(typeof response.body.updated_shelf.name).toBe("string");
+		expect(response.body.updated_shelf.books.some((book) => book.title)).toBe(
+			"The Hitchhiker's Guide to the Galaxy"
+		);
+	});
+});
+
+//get all shelves populated with books
+// describe('GET /api/:id', () => {
+
+// });
