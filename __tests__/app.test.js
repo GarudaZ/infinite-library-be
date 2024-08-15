@@ -7,7 +7,12 @@ const { faker } = require("@faker-js/faker");
 require("dotenv").config();
 
 beforeEach(async () => {
-	await mongoose.connect(process.env.MONGODB_CONNECTION);
+	await mongoose.connect(process.env.MONGODB_TEST_CONNECTION);
+
+	const collections = await mongoose.connection.db.collections();
+	for (const collection of collections) {
+		await collection.deleteMany({});
+	}
 });
 
 afterAll((done) => {
@@ -27,6 +32,26 @@ describe("GET /api/users", () => {
 		const response = await request(app).get("/api/users").expect(200);
 		expect(response.body).toHaveProperty("users");
 		expect(response.body.users).toBeInstanceOf(Array);
+	});
+});
+
+describe.only("POST /api/users", () => {
+	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
+		const newUser = {
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		};
+
+		const response = await request(app)
+			.post("/api/users")
+			.send(newUser)
+			.expect(201);
+		expect(response.body).toHaveProperty("added_user");
+		expect(response.body.added_user).toBeInstanceOf(Object);
+
+		expect(response.body.added_user.username).toBe("testuser");
+		expect(response.body.added_user.password).toBe("securepassword");
 	});
 });
 
@@ -88,5 +113,36 @@ describe("GET /api/books", () => {
 			expect(book.genres.length).toBeGreaterThan(0);
 			expect(typeof book.cover).toBe("string");
 		});
+	});
+});
+describe("POST /api/:user/shelves", () => {
+	it("returns 201 status code and returns the JSON of the shelf add to the user", async () => {
+		const userId = "test"; //test user
+
+		const newShelf = {
+			title: "The Hitchhiker's Guide to the Galaxy",
+			author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		};
+
+		const response = await request(app)
+			.post("/api/books")
+			.send(newBook)
+			.expect(201);
+		expect(response.body).toHaveProperty("added_book");
+		expect(response.body.added_book).toBeInstanceOf(Object);
+
+		expect(typeof response.body.added_book.title).toBe("string");
+		expect(typeof response.body.added_book.author).toBe("string");
+		expect(typeof response.body.added_book.isbn).toBe("string");
+		expect(typeof response.body.added_book.published).toBe("string");
+		expect(typeof response.body.added_book.publisher).toBe("string");
+		expect(response.body.added_book.genres).toBeInstanceOf(Array);
+		expect(response.body.added_book.genres.length).toBeGreaterThan(0);
+		expect(typeof response.body.added_book.cover).toBe("string");
 	});
 });

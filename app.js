@@ -42,7 +42,7 @@ app.get("/api/users/:id/shelves", async (req, res) => {
 app.post("/api/users", async (req, res) => {
 	const newUser = new User({ ...req.body });
 	const insertedUser = await newUser.save();
-	return res.status(201).json(insertedUser);
+	return res.status(201).json({ added_user: insertedUser });
 });
 
 app.get("/api/books", async (req, res) => {

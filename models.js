@@ -4,6 +4,9 @@ const userSchema = new mongoose.Schema(
 	{
 		username: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
+		shelves: [
+			{ shelf_id: { type: mongoose.Schema.Types.ObjectId, ref: "Shelf" } },
+		],
 		created_at: { type: Date, default: Date.now },
 	},
 	{ collection: "Users" }
@@ -27,17 +30,20 @@ const bookSchema = new mongoose.Schema(
 
 const Book = mongoose.model("Book", bookSchema);
 
-const shelfSchema = new mongoose.Schema({
-	user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-	name: { type: String, required: true },
-	books: [
-		{
-			book_id: { type: mongoose.SchemaType.Types.ObjectId, required: true },
-			added_at: { type: Date },
-		},
-	],
-	created_at: { type: Date, default: Date.now },
-});
+const shelfSchema = new mongoose.Schema(
+	{
+		user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+		name: { type: String, required: true },
+		books: [
+			{
+				book_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+				added_at: { type: Date },
+			},
+		],
+		created_at: { type: Date, default: Date.now },
+	},
+	{ collection: "Shelves" }
+);
 
 const Shelf = mongoose.model("Shelf", shelfSchema);
 module.exports = { User, Book, Shelf };
