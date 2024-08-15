@@ -38,6 +38,9 @@ const shelfSchema = new mongoose.Schema(
 			{
 				book_id: { type: mongoose.Schema.Types.ObjectId, required: true },
 				added_at: { type: Date },
+				notes: { type: String },
+				reviews: { type: String },
+				tags: [{ type: String }],
 			},
 		],
 		created_at: { type: Date, default: Date.now },

@@ -66,6 +66,20 @@ app.post("/api/:id/shelves", async (req, res) => {
 	return res.status(201).json({ added_shelf: insertedShelf });
 });
 
+app.patch("/api/shelves/:shelfId", async (req, res) => {
+	const { shelfId } = req.params;
+	const { book_id } = req.body;
+
+	const shelf = await Shelf.findById(shelfId);
+	if (!shelf) {
+		return res.status(404).send({ error: "Shelf not found" });
+	}
+
+	shelf.books.push({ book_id, added_at: new Date() });
+	await shelf.save();
+	res.status(200).send({ updated_shelf: shelf });
+});
+
 module.exports = app;
 
 const start = async () => {

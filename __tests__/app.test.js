@@ -3,7 +3,7 @@ const app = require("../app");
 const endpoints = require("../endpoints.json");
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
-const { User, Shelf } = require("../models");
+const { User, Shelf, Book } = require("../models");
 
 require("dotenv").config();
 
@@ -170,7 +170,7 @@ describe.only("PATCH /api/shelves/:shelfId", () => {
 
 		const savedShelf = await newShelf.save();
 
-		const newBook = {
+		const newBook = new Book({
 			title: "The Hitchhiker's Guide to the Galaxy",
 			author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
@@ -178,21 +178,28 @@ describe.only("PATCH /api/shelves/:shelfId", () => {
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
 			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
-		};
+		});
+
+		const savedBook = await newBook.save();
 
 		const response = await request(app)
-			.post(`/api/shelves/${savedShelf._id}`)
-			.send(newBook)
-			.expect(201);
+			.patch(`/api/shelves/${savedShelf._id}`)
+			.send({ book_id: savedBook._id })
+			.expect(200);
 		expect(response.body).toHaveProperty("updated_shelf");
 		expect(response.body.updated_shelf.user_id).toEqual(
 			savedUser._id.toString()
 		);
 
 		expect(typeof response.body.updated_shelf.name).toBe("string");
-		expect(response.body.updated_shelf.books.some((book) => book.title)).toBe(
-			"The Hitchhiker's Guide to the Galaxy"
-		);
+		console.log(response.body.updated_shelf.books);
+		expect(typeof response.body.updated_shelf.books[0].added_at).toBe("string");
+
+		expect(
+			response.body.updated_shelf.books.some(
+				(book) => book.book_id === savedBook._id.toString()
+			)
+		).toBe(true);
 	});
 });
 
