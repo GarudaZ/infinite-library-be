@@ -207,12 +207,64 @@ describe("PATCH /api/shelves/:shelfId", () => {
 //get all shelves populated with books return combined
 describe.only("GET /api/users/:id/shelves/books", () => {
 	it("returns 200 status and all the shelves and books from the user", async () => {
+		const newBook = new Book({
+			title: "The Hitchhiker's Guide to the Galaxy",
+			author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		});
+
+		const savedBook = await newBook.save();
+
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
+
+		const newShelf1 = new Shelf({
+			user_id: savedUser._id,
+			name: "testshelf1",
+			books: [{ book_id: savedBook._id, added_at: new Date() }],
+		});
+
+		const savedShelf1 = await newShelf1.save();
+
+		const newShelf2 = new Shelf({
+			user_id: savedUser._id,
+			name: "testshelf2",
+			books: [{ book_id: savedBook._id, added_at: new Date() }],
+		});
+
+		const savedShelf2 = await newShelf2.save();
+
+		savedUser.shelves.push(savedShelf1._id, savedShelf2._id);
+		await savedUser.save();
+
+		const id = savedUser._id;
 		const response = await request(app)
-			.get("/api/users/:id/shelves/books")
+			.get(`/api/users/${id}/shelves/books`)
 			.expect(200);
-		expect(response.body).toHaveProperty("shelves");
-		response.body.shelves.forEach((shelf) => {
+		expect(response.body).toHaveProperty("shelvedBooks");
+		console.log(response.body.shelvedBooks);
+
+		response.body.shelvedBooks.forEach((shelf) => {
 			expect(shelf).toHaveProperty("books");
+			expect(shelf.books).toBeInstanceOf(Array);
+			shelf.books.forEach((bookEntry) => {
+				expect(bookEntry).toHaveProperty("book_id");
+				expect(bookEntry.book_id).toHaveProperty(
+					"title",
+					"The Hitchhiker's Guide to the Galaxy"
+				);
+				expect(bookEntry.book_id).toHaveProperty("author", "Douglas Adams");
+				expect(bookEntry).toHaveProperty("added_at");
+			});
 		});
 	});
 });

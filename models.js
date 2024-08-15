@@ -4,9 +4,7 @@ const userSchema = new mongoose.Schema(
 	{
 		username: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
-		shelves: [
-			{ shelf_id: { type: mongoose.Schema.Types.ObjectId, ref: "Shelf" } },
-		],
+		shelves: [{ type: mongoose.Schema.Types.ObjectId, ref: "Shelf" }],
 		created_at: { type: Date, default: Date.now },
 	},
 	{ collection: "Users" }
@@ -32,11 +30,11 @@ const Book = mongoose.model("Book", bookSchema);
 
 const shelfSchema = new mongoose.Schema(
 	{
-		user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+		user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		name: { type: String, required: true },
 		books: [
 			{
-				book_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+				book_id: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
 				added_at: { type: Date },
 				notes: { type: String },
 				reviews: { type: String },

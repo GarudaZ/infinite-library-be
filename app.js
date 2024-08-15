@@ -80,6 +80,26 @@ app.patch("/api/shelves/:shelfId", async (req, res) => {
 	res.status(200).send({ updated_shelf: shelf });
 });
 
+app.get("/api/users/:id/shelves/books", async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const user = await User.findById(id).populate({
+			path: "shelves",
+			populate: {
+				path: "books.book_id",
+				model: "Book",
+			},
+		});
+
+		res.status(200).json({ shelvedBooks: user.shelves });
+	} catch (error) {
+		res
+			.status(500)
+			.json({ error: "An error occurred fetching users shelves and books" });
+	}
+});
+
 module.exports = app;
 
 const start = async () => {
