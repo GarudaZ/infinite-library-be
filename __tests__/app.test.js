@@ -3,6 +3,7 @@ const app = require("../app");
 const endpoints = require("../endpoints.json");
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
+const { User } = require("../models");
 
 require("dotenv").config();
 
@@ -35,7 +36,7 @@ describe("GET /api/users", () => {
 	});
 });
 
-describe.only("POST /api/users", () => {
+describe("POST /api/users", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const newUser = {
 			username: "testuser",
@@ -57,8 +58,16 @@ describe.only("POST /api/users", () => {
 
 describe("GET /api/users/:id", () => {
 	it("returns the details of the user matching the id", async () => {
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
+
 		const response = await request(app)
-			.get("/api/users/66bb5ea7136f48e2c37a3849")
+			.get(`/api/users/${savedUser._id}`)
 			.expect(200);
 		expect(response.body).toHaveProperty("user");
 		expect(response.body.user).toBeInstanceOf(Object);
@@ -69,7 +78,7 @@ describe("GET /api/users/:id", () => {
 });
 
 //faker used to generate rand unique ISBNs
-describe.skip("POST /api/books", () => {
+describe("POST /api/books", () => {
 	it("returns 201 status code and returns the JSON of the book add to the collection", async () => {
 		const newBook = {
 			title: "The Hitchhiker's Guide to the Galaxy",
@@ -115,34 +124,30 @@ describe("GET /api/books", () => {
 		});
 	});
 });
-describe("POST /api/:user/shelves", () => {
+describe("POST /api/:id/shelves", () => {
 	it("returns 201 status code and returns the JSON of the shelf add to the user", async () => {
-		const userId = "test"; //test user
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
 
 		const newShelf = {
-			title: "The Hitchhiker's Guide to the Galaxy",
-			author: "Douglas Adams",
-			isbn: faker.string.numeric(10),
-			published: "1979",
-			publisher: "Pan Books",
-			genres: ["Comedy", "Science Fiction"],
-			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+			user_id: savedUser._id,
+			name: "testshelf",
+			books: [],
 		};
 
 		const response = await request(app)
-			.post("/api/books")
-			.send(newBook)
+			.post(`/api/${savedUser._id}/shelves`)
+			.send(newShelf)
 			.expect(201);
-		expect(response.body).toHaveProperty("added_book");
-		expect(response.body.added_book).toBeInstanceOf(Object);
+		expect(response.body).toHaveProperty("added_shelf");
+		expect(response.body.added_shelf.user_id).toEqual(savedUser._id.toString());
 
-		expect(typeof response.body.added_book.title).toBe("string");
-		expect(typeof response.body.added_book.author).toBe("string");
-		expect(typeof response.body.added_book.isbn).toBe("string");
-		expect(typeof response.body.added_book.published).toBe("string");
-		expect(typeof response.body.added_book.publisher).toBe("string");
-		expect(response.body.added_book.genres).toBeInstanceOf(Array);
-		expect(response.body.added_book.genres.length).toBeGreaterThan(0);
-		expect(typeof response.body.added_book.cover).toBe("string");
+		expect(typeof response.body.added_shelf.name).toBe("string");
+		expect(response.body.added_shelf.books).toBeInstanceOf(Array);
 	});
 });

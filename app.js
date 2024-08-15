@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { User, Book } = require("./models");
+const { User, Book, Shelf } = require("./models");
 require("dotenv").config();
 const app = express();
 app.use(express.json());
@@ -58,6 +58,12 @@ app.post("/api/books", async (req, res) => {
 	const newBook = new Book({ ...req.body });
 	const insertedBook = await newBook.save();
 	return res.status(201).json({ added_book: insertedBook });
+});
+
+app.post("/api/:id/shelves", async (req, res) => {
+	const newShelf = new Shelf({ ...req.body });
+	const insertedShelf = await newShelf.save();
+	return res.status(201).json({ added_shelf: insertedShelf });
 });
 
 module.exports = app;
