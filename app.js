@@ -12,7 +12,9 @@ app.get("/api", async (req, res) => {
 
 app.get("/api/users", async (req, res) => {
 	try {
+		console.log("Fetching users...");
 		const users = await User.find();
+		console.log("Users fetched successfully");
 		res.status(200).json({ users: users });
 	} catch (error) {
 		res.status(500).json({ error: "An error occurred fetching users" });
@@ -103,15 +105,17 @@ app.get("/api/users/:id/shelves/books", async (req, res) => {
 module.exports = app;
 
 const start = async () => {
+	console.log("attempting to connect");
 	try {
 		await mongoose.connect(process.env.MONGODB_CONNECTION);
-		app.listen(3000, () => console.log("Server started on port 3000"));
+		app.listen(3030, () => console.log("Server started on port 3000"));
+		console.log("mongo connected");
 	} catch (error) {
 		console.error(error);
 		process.exit(1);
 	}
 };
 
-if (require.main === module) {
+if (process.env.NODE_ENV !== "test") {
 	start();
 }

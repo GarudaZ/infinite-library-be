@@ -7,6 +7,10 @@ const { User, Shelf, Book } = require("../models");
 
 require("dotenv").config();
 
+// beforeAll(() => {
+// 	mongoose.connection.close();
+// });
+
 beforeEach(async () => {
 	await mongoose.connect(process.env.MONGODB_TEST_CONNECTION);
 
