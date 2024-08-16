@@ -18,3 +18,7 @@ Start the local server using:
 ```bash
 node app.js
 ```
+
+## Hosting
+
+Be sure to set the .env variables when hosting the backend. See the .env-example for the format.
