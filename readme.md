@@ -2,6 +2,8 @@
 
 This express app provides a web api for accessing the Infinite Library mongodb database. It includes all of the endpoints found in the 'endpoints.json' file.
 
+Hosted with Vercel @: https://infinite-library.vercel.app/api
+
 ## Testing
 
 Testing using Jest.
