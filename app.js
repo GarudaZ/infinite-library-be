@@ -57,7 +57,10 @@ app.post("/api/users/:id/shelves", async (req, res) => {
 		}
 		const newShelf = new Shelf({ ...req.body });
 		const insertedShelf = await newShelf.save();
+
 		user.shelves.push(insertedShelf._id);
+		await user.save();
+
 		return res.status(201).json({ added_shelf: insertedShelf });
 	} catch (error) {
 		res.status(500).json({ error: "An  error occurred posting user shelf" });

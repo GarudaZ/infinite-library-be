@@ -25,3 +25,7 @@ node app.js
 ## Hosting
 
 Be sure to set the .env variables when hosting the backend. See the .env-example for the format.
+
+Once the backend is hosted with Vercel, you can update using 'vercel --prod'.
+
+To test the vercel build during development use 'vercel dev'.
