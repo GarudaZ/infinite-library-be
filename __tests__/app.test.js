@@ -7,10 +7,6 @@ const { User, Shelf, Book } = require("../models");
 
 require("dotenv").config();
 
-// beforeAll(() => {
-// 	mongoose.connection.close();
-// });
-
 beforeEach(async () => {
 	await mongoose.connect(process.env.MONGODB_TEST_CONNECTION);
 
@@ -129,6 +125,53 @@ describe("GET /api/books", () => {
 		});
 	});
 });
+
+describe.only("GET /api/user/:id/shelves", () => {
+	it("returns the users shelves", async () => {
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
+
+		const newShelf1 = new Shelf({
+			user_id: savedUser._id,
+			name: "testshelf1",
+			books: [],
+		});
+
+		const savedShelf1 = await newShelf1.save();
+
+		const newShelf2 = new Shelf({
+			user_id: savedUser._id,
+			name: "testshelf2",
+			books: [],
+		});
+
+		const savedShelf2 = await newShelf2.save();
+
+		savedUser.shelves.push(savedShelf1._id, savedShelf2._id);
+		await savedUser.save();
+
+		const id = savedUser._id;
+		const response = await request(app)
+			.get(`/api/users/${id}/shelves`)
+			.expect(200);
+		expect(response.body).toHaveProperty("shelves");
+		console.log(response.body.shelves);
+		expect(response.body.shelves.length).toBe(2);
+		response.body.shelves.forEach((shelf) => {
+			expect(shelf).toHaveProperty("user_id");
+			expect(shelf).toHaveProperty("name");
+			expect(shelf).toHaveProperty("books");
+			expect(shelf.books).toBeInstanceOf(Array);
+			// });
+		});
+	});
+});
+
 describe("POST /api/users/:id/shelves", () => {
 	it("returns 201 status code and returns the JSON of the shelf add to the user", async () => {
 		const newUser = new User({
@@ -209,7 +252,7 @@ describe("PATCH /api/shelves/:shelfId", () => {
 });
 
 //get all shelves populated with books return combined
-describe.only("GET /api/users/:id/shelves/books", () => {
+describe("GET /api/users/:id/shelves/books", () => {
 	it("returns 200 status and all the shelves and books from the user", async () => {
 		const newBook = new Book({
 			title: "The Hitchhiker's Guide to the Galaxy",
@@ -255,7 +298,6 @@ describe.only("GET /api/users/:id/shelves/books", () => {
 			.get(`/api/users/${id}/shelves/books`)
 			.expect(200);
 		expect(response.body).toHaveProperty("shelvedBooks");
-		console.log(response.body.shelvedBooks);
 
 		response.body.shelvedBooks.forEach((shelf) => {
 			expect(shelf).toHaveProperty("books");
