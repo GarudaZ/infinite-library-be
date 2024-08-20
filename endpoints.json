@@ -22,5 +22,82 @@
 				}
 			]
 		}
+	},
+	"POST /api/users": {
+		"description": "adds a user to the registered users collection",
+		"exampleRequest": {
+			"username": "homepage",
+			"password": "testerpword",
+			"shelves": []
+		},
+		"exampleResponse": {
+			"added_user": {
+				"username": "homepage",
+				"password": "testerpword",
+				"shelves": [],
+				"_id": "66c465304a078ec5ec51bdff",
+				"created_at": "2024-08-20T09:43:12.566Z",
+				"__v": 0
+			}
+		}
+	},
+	"GET /api/users/:id": {
+		"description": "serves the user information according to their userid",
+		"exampleResponse": {
+			"user": {
+				"_id": "66bdd36476604b7be68630ac",
+				"username": "testuser",
+				"password": "securepassword",
+				"shelves": [],
+				"created_at": "2024-08-15T10:07:32.520Z",
+				"__v": 0
+			}
+		}
+	},
+	"GET /api/users/:id/shelves": {
+		"description": "serves a list of a users shelves according to their user ID",
+		"exampleResponse": {
+			"user": {
+				"_id": "66c465304a078ec5ec51bdff",
+				"username": "testuser",
+				"password": "securepassword",
+				"shelves": [],
+				"created_at": "2024-08-15T10:07:32.520Z",
+				"__v": 0
+			}
+		}
+	},
+	"POST /api/users/:id/shelves": {
+		"description": "adds a shelf to users profile",
+		"exampleRequest": {
+			"user_id": "66c465304a078ec5ec51bdff",
+			"name": "display-books",
+			"books": [
+				{
+					"book_id": "66bbbec98dc2ccd85cc3a66f",
+					"notes": "",
+					"reviews": "",
+					"tags": []
+				}
+			]
+		},
+		"exampleResponse": {
+			"added_shelf": {
+				"user_id": "66c465304a078ec5ec51bdff",
+				"name": "display-books",
+				"books": [
+					{
+						"book_id": "66bbbec98dc2ccd85cc3a66f",
+						"notes": "",
+						"reviews": "",
+						"tags": [],
+						"_id": "66c4696e9017582a7b1f47ef"
+					}
+				],
+				"_id": "66c4696e9017582a7b1f47ee",
+				"created_at": "2024-08-20T10:01:18.436Z",
+				"__v": 0
+			}
+		}
 	}
 }
