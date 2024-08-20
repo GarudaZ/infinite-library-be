@@ -55,7 +55,7 @@
 		}
 	},
 	"GET /api/users/:id/shelves": {
-		"description": "serves a list of a users shelves according to their user ID",
+		"description": "serves an array of a users shelves according to  user ID",
 		"exampleResponse": {
 			"user": {
 				"_id": "66c465304a078ec5ec51bdff",
@@ -101,7 +101,56 @@
 		}
 	},
 	"GET /api/users/:id/shelves/books": {
-		"description": "returns a list of all the users shelves and books"
+		"description": "returns an array of all the users shelves populated with books",
+		"exampleResponse": {
+			"shelvedBooks": [
+				{
+					"_id": "66c47de86a6fa723d0269c47",
+					"user_id": "66c465304a078ec5ec51bdff",
+					"name": "display-books",
+					"books": [
+						{
+							"book_id": {
+								"_id": "66bbbec98dc2ccd85cc3a66f",
+								"title": "The Hitchhiker's Guide to the Galaxy",
+								"author": "Douglas Adams",
+								"isbn": "0330258648",
+								"published": "1979-01-01T00:00:00.000Z",
+								"publisher": "Pan Books",
+								"genres": ["Comedy", "Science Fiction"],
+								"cover": "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+								"created_at": "2024-08-13T20:15:05.219Z",
+								"__v": 0
+							},
+							"notes": "",
+							"reviews": "",
+							"tags": [],
+							"_id": "66c47de86a6fa723d0269c48"
+						}
+					],
+					"created_at": "2024-08-20T11:28:40.912Z",
+					"__v": 0
+				}
+			]
+		}
 	},
-	"exampleResponse": {}
+	"GET /api/books": {
+		"description": "returns an array of books from the books collection",
+		"exampleResponse": {
+			"books": [
+				{
+					"_id": "66bbbec98dc2ccd85cc3a66f",
+					"title": "The Hitchhiker's Guide to the Galaxy",
+					"author": "Douglas Adams",
+					"isbn": "0330258648",
+					"published": "1979-01-01T00:00:00.000Z",
+					"publisher": "Pan Books",
+					"genres": ["Comedy", "Science Fiction"],
+					"cover": "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+					"created_at": "2024-08-13T20:15:05.219Z",
+					"__v": 0
+				}
+			]
+		}
+	}
 }
