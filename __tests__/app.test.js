@@ -126,7 +126,7 @@ describe("GET /api/books", () => {
 	});
 });
 
-describe.only("GET /api/user/:id/shelves", () => {
+describe("GET /api/user/:id/shelves", () => {
 	it("returns the users shelves", async () => {
 		const newUser = new User({
 			username: "testuser",
@@ -160,7 +160,6 @@ describe.only("GET /api/user/:id/shelves", () => {
 			.get(`/api/users/${id}/shelves`)
 			.expect(200);
 		expect(response.body).toHaveProperty("shelves");
-		console.log(response.body.shelves);
 		expect(response.body.shelves.length).toBe(2);
 		response.body.shelves.forEach((shelf) => {
 			expect(shelf).toHaveProperty("user_id");
@@ -240,7 +239,6 @@ describe("PATCH /api/shelves/:shelfId", () => {
 		);
 
 		expect(typeof response.body.updated_shelf.name).toBe("string");
-		console.log(response.body.updated_shelf.books);
 		expect(typeof response.body.updated_shelf.books[0].added_at).toBe("string");
 
 		expect(
