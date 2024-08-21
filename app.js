@@ -7,6 +7,12 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 const endpoints = require("./endpoints.json");
+const rateLimit = require("express-rate-limit");
+
+const createLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 5,
+});
 
 app.get("/api", async (req, res) => {
 	return res.json(endpoints);
@@ -24,7 +30,7 @@ app.get("/api/users", async (req, res) => {
 	}
 });
 
-app.post("/api/users", async (req, res) => {
+app.post("/api/users", createLimiter, async (req, res) => {
 	try {
 		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		const newUser = new User({
@@ -51,7 +57,9 @@ app.post("/api/users/login", async (req, res) => {
 			console.log("getting token");
 			console.log(user);
 
-			const accessToken = jwt.sign(user.username, process.env.JWT_SECRET);
+			const tokenUserDetails = { username: user.username, user_id: user._id };
+
+			const accessToken = jwt.sign(tokenUserDetails, process.env.JWT_SECRET);
 			res
 				.status(200)
 				.json({ success: "Logged in successfully", token: accessToken });
@@ -64,15 +72,33 @@ app.post("/api/users/login", async (req, res) => {
 });
 
 //middleware
-// function authenticateToken(req, res, next){
+function authenticateToken(req, res, next) {
+	const authHeader = req.headers["authorization"];
+	const token = authHeader && authHeader.split(" ")[1];
 
-// }
+	if (token === null)
+		return res.status(401).json({ error: "header undefined" });
 
-app.get("/api/users/:id", async (req, res) => {
+	jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+		if (err) return res.status(403);
+		req.user = user;
+		next();
+	});
+}
+
+app.get("/api/users/:id", authenticateToken, async (req, res) => {
+	console.log(req.user);
+
 	const { id } = req.params;
 	try {
 		const user = await User.findById(id);
-		res.status(200).json({ user: user });
+		if (user.username === req.user.username) {
+			res.status(200).json({ user: user });
+		} else {
+			return res
+				.status(401)
+				.json({ error: "not authorised to access this user" });
+		}
 	} catch (error) {
 		res.status(500).json({ error: "An error occurred fetching users" });
 	}

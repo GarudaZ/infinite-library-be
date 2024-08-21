@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const { User, Shelf, Book } = require("../models");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -57,7 +58,7 @@ describe("POST /api/users", () => {
 		expect(response.body.added_user.password === newUser.password).toBe(false);
 	});
 });
-describe.only("POST /api/users/login", () => {
+describe("POST /api/users/login", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const hashedPassword = await bcrypt.hash("securepassword", 10);
 
@@ -85,16 +86,24 @@ describe.only("POST /api/users/login", () => {
 });
 describe("GET /api/users/:id", () => {
 	it("returns the details of the user matching the id", async () => {
+		const hashedPassword = await bcrypt.hash("securepassword", 10);
+
 		const newUser = new User({
 			username: "testuser",
-			password: "securepassword",
+			password: hashedPassword,
 			shelves: [],
 		});
-
 		const savedUser = await newUser.save();
 
+		const tokenUserDetails = {
+			username: savedUser.username,
+			user_id: savedUser._id,
+		};
+
+		const token = jwt.sign(tokenUserDetails, process.env.JWT_SECRET);
 		const response = await request(app)
 			.get(`/api/users/${savedUser._id}`)
+			.set("Authorization", `Bearer ${token}`)
 			.expect(200);
 		expect(response.body).toHaveProperty("user");
 		expect(response.body.user).toBeInstanceOf(Object);
