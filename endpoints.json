@@ -152,5 +152,61 @@
 				}
 			]
 		}
+	},
+	"PATCH /api/shelves/:shelfid": {
+		"description": "adds a book to an existing shelf",
+		"exampleRequest": {
+			"book_id": "66c48f5f3bceac3c5a8c0716"
+		},
+		"exampleResponse": {
+			"updated_shelf": {
+				"_id": "66c47de86a6fa723d0269c47",
+				"user_id": "66c465304a078ec5ec51bdff",
+				"name": "display-books",
+				"books": [
+					{
+						"book_id": "66bbbec98dc2ccd85cc3a66f",
+						"notes": "",
+						"reviews": "",
+						"tags": [],
+						"_id": "66c47de86a6fa723d0269c48"
+					},
+					{
+						"book_id": "66c48f5f3bceac3c5a8c0716",
+						"added_at": "2024-08-20T12:52:03.740Z",
+						"tags": [],
+						"_id": "66c49173a7514ae66fc05e9d"
+					}
+				],
+				"created_at": "2024-08-20T11:28:40.912Z",
+				"__v": 1
+			}
+		}
+	},
+	"POST /api/books": {
+		"description": "adds a book to the books collection",
+		"exampleRequest": {
+			"title": "A Game of Thrones: Book 1 of a Song of Ice and Fire",
+			"author": "George R. R. Martin",
+			"isbn": "0007548230",
+			"published": "Mar 27, 2014",
+			"publisher": "HarperCollins",
+			"genres": ["Action & Adventure", "American Fantasy fiction"],
+			"cover": "https://covers.openlibrary.org/b/id/8785690-L.jpg"
+		},
+		"exampleResponse": {
+			"added_book": {
+				"title": "A Game of Thrones: Book 1 of a Song of Ice and Fire",
+				"author": "George R. R. Martin",
+				"isbn": "0007548230",
+				"published": "2014-03-27T00:00:00.000Z",
+				"publisher": "HarperCollins",
+				"genres": ["Action & Adventure", "American Fantasy fiction"],
+				"cover": "https://covers.openlibrary.org/b/id/8785690-L.jpg",
+				"_id": "66c48f5f3bceac3c5a8c0716",
+				"created_at": "2024-08-20T12:43:11.192Z",
+				"__v": 0
+			}
+		}
 	}
 }

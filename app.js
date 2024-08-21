@@ -86,20 +86,6 @@ app.get("/api/users/:id/shelves/books", async (req, res) => {
 			.json({ error: "An error occurred fetching users shelves and books" });
 	}
 });
-app.get("/api/books", async (req, res) => {
-	try {
-		const books = await Book.find();
-		res.status(200).json({ books: books });
-	} catch (error) {
-		res.status(500).json({ error: "An error occurred fetching users" });
-	}
-});
-
-app.post("/api/books", async (req, res) => {
-	const newBook = new Book({ ...req.body });
-	const insertedBook = await newBook.save();
-	return res.status(201).json({ added_book: insertedBook });
-});
 
 app.patch("/api/shelves/:shelfId", async (req, res) => {
 	const { shelfId } = req.params;
@@ -113,6 +99,21 @@ app.patch("/api/shelves/:shelfId", async (req, res) => {
 	shelf.books.push({ book_id, added_at: new Date() });
 	await shelf.save();
 	res.status(200).send({ updated_shelf: shelf });
+});
+
+app.get("/api/books", async (req, res) => {
+	try {
+		const books = await Book.find();
+		res.status(200).json({ books: books });
+	} catch (error) {
+		res.status(500).json({ error: "An error occurred fetching users" });
+	}
+});
+
+app.post("/api/books", async (req, res) => {
+	const newBook = new Book({ ...req.body });
+	const insertedBook = await newBook.save();
+	return res.status(201).json({ added_book: insertedBook });
 });
 
 module.exports = app;
