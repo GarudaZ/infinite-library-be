@@ -22,6 +22,12 @@ Start the local server using:
 node app.js
 ```
 
+There is a script set up using nodemon to automatically refresh the server during development:
+
+```bash
+npm run dev
+```
+
 ## Hosting
 
 Be sure to set the .env variables when hosting the backend. See the .env-example for the format.
