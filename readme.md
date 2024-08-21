@@ -35,3 +35,15 @@ Be sure to set the .env variables when hosting the backend. See the .env-example
 Once the backend is hosted with Vercel, you can update using 'vercel --prod'.
 
 To test the vercel build during development use 'vercel dev'.
+
+## Env
+
+### Generating JWT_Secret
+
+You can generate your JWT secret using the features of node. Open a new terminal and use the command below:
+
+```bash
+require('crypto').randomBytes(32).toString('hex')
+```
+
+Copy the result into your .env file under JWT_SECRET.

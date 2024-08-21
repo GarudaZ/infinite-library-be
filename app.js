@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { User, Book, Shelf } = require("./models");
 require("dotenv").config();
 const app = express();
@@ -47,7 +48,13 @@ app.post("/api/users/login", async (req, res) => {
 	}
 	try {
 		if (await bcrypt.compare(req.body.password, user.password)) {
-			res.status(200).json({ success: "Logged in successfully" });
+			console.log("getting token");
+			console.log(user);
+
+			const accessToken = jwt.sign(user.username, process.env.JWT_SECRET);
+			res
+				.status(200)
+				.json({ success: "Logged in successfully", token: accessToken });
 		} else {
 			res.status(401).json({ failed: "Password doesn't match" });
 		}
@@ -55,6 +62,11 @@ app.post("/api/users/login", async (req, res) => {
 		res.status(500).json({ error: "Error logging in" });
 	}
 });
+
+//middleware
+// function authenticateToken(req, res, next){
+
+// }
 
 app.get("/api/users/:id", async (req, res) => {
 	const { id } = req.params;
