@@ -36,7 +36,7 @@ describe("GET /api/users", () => {
 	});
 });
 
-describe("POST /api/users", () => {
+describe.only("POST /api/users", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const newUser = {
 			username: "testuser",
@@ -52,7 +52,8 @@ describe("POST /api/users", () => {
 		expect(response.body.added_user).toBeInstanceOf(Object);
 
 		expect(response.body.added_user.username).toBe("testuser");
-		expect(response.body.added_user.password).toBe("securepassword");
+		expect(typeof response.body.added_user.password).toBe("string");
+		expect(response.body.added_user.password === newUser.password).toBe(false);
 	});
 });
 

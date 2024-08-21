@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const { User, Book, Shelf } = require("./models");
 require("dotenv").config();
 const app = express();
@@ -10,6 +11,7 @@ app.get("/api", async (req, res) => {
 	return res.json(endpoints);
 });
 
+//remove this when no longer needed for development
 app.get("/api/users", async (req, res) => {
 	try {
 		console.log("Fetching users...");
@@ -22,10 +24,24 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.post("/api/users", async (req, res) => {
-	const newUser = new User({ ...req.body });
-	const insertedUser = await newUser.save();
-	return res.status(201).json({ added_user: insertedUser });
+	try {
+		const hashedPassword = await bcrypt.hash(req.body.password, 10);
+		const newUser = new User({
+			username: req.body.username,
+			password: hashedPassword,
+		});
+		const insertedUser = await newUser.save();
+		return res.status(201).json({ added_user: insertedUser });
+	} catch (error) {
+		res.status(500).json({ error: "An error occurred adding user" });
+	}
 });
+
+// app.post("/api/users/login", async (req, res) => {
+// 	//username and password
+// 	const user = { ...req.body}
+
+// });
 
 app.get("/api/users/:id", async (req, res) => {
 	const { id } = req.params;
