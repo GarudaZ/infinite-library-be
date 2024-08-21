@@ -37,11 +37,24 @@ app.post("/api/users", async (req, res) => {
 	}
 });
 
-// app.post("/api/users/login", async (req, res) => {
-// 	//username and password
-// 	const user = { ...req.body}
+app.post("/api/users/login", async (req, res) => {
+	const user = await User.findOne({ username: req.body.username });
+	console.log(user.password);
+	console.log(req.body.password);
 
-// });
+	if (user === null) {
+		res.status(400).json({ error: "no user found" });
+	}
+	try {
+		if (await bcrypt.compare(req.body.password, user.password)) {
+			res.status(200).json({ success: "Logged in successfully" });
+		} else {
+			res.status(401).json({ failed: "Password doesn't match" });
+		}
+	} catch {
+		res.status(500).json({ error: "Error logging in" });
+	}
+});
 
 app.get("/api/users/:id", async (req, res) => {
 	const { id } = req.params;

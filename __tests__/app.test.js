@@ -4,6 +4,7 @@ const endpoints = require("../endpoints.json");
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const { User, Shelf, Book } = require("../models");
+const bcrypt = require("bcrypt");
 
 require("dotenv").config();
 
@@ -27,7 +28,7 @@ describe("GET /api", () => {
 		expect(response.body).toEqual(endpoints);
 	});
 });
-
+//endpoint to be removed
 describe("GET /api/users", () => {
 	it("returns an array of users", async () => {
 		const response = await request(app).get("/api/users").expect(200);
@@ -36,7 +37,7 @@ describe("GET /api/users", () => {
 	});
 });
 
-describe.only("POST /api/users", () => {
+describe("POST /api/users", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const newUser = {
 			username: "testuser",
@@ -56,7 +57,32 @@ describe.only("POST /api/users", () => {
 		expect(response.body.added_user.password === newUser.password).toBe(false);
 	});
 });
+describe.only("POST /api/users/login", () => {
+	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
+		const hashedPassword = await bcrypt.hash("securepassword", 10);
 
+		const newUser = new User({
+			username: "testuser",
+			password: hashedPassword,
+			shelves: [],
+		});
+
+		await newUser.save();
+
+		const login = {
+			username: "testuser",
+			password: "securepassword",
+		};
+
+		const response = await request(app)
+			.post("/api/users/login")
+			.send(login)
+			.expect(200);
+		console.log(response.body);
+
+		expect(response.body.success).toBe("Logged in successfully");
+	});
+});
 describe("GET /api/users/:id", () => {
 	it("returns the details of the user matching the id", async () => {
 		const newUser = new User({
