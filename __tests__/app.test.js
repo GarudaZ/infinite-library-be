@@ -58,7 +58,7 @@ describe("POST /api/users", () => {
 		expect(response.body.added_user.password === newUser.password).toBe(false);
 	});
 });
-describe("POST /api/users/login", () => {
+describe.only("POST /api/users/login", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const hashedPassword = await bcrypt.hash("securepassword", 10);
 

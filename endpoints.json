@@ -41,6 +41,17 @@
 			}
 		}
 	},
+	"POST /api/users/login": {
+		"description": "allows a user to login and returns JWT token",
+		"exampleRequest": {
+			"username": "testuser",
+			"password": "securepassword"
+		},
+		"exampleResponse": {
+			"success": "Logged in successfully",
+			"token": "Bearer Token"
+		}
+	},
 	"GET /api/users/:id": {
 		"description": "serves the user information according to their userid",
 		"exampleResponse": {
