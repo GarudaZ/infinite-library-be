@@ -8,11 +8,18 @@ const app = express();
 app.use(express.json());
 const endpoints = require("./endpoints.json");
 const rateLimit = require("express-rate-limit");
+const cors = require("cors");
 
 const createLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	max: 5,
 });
+
+app.use(
+	cors({
+		origin: "http://localhost:4200",
+	})
+);
 
 app.get("/api", async (req, res) => {
 	return res.json(endpoints);
