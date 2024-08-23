@@ -16,9 +16,10 @@ const createLimiter = rateLimit({
 });
 
 app.use(
-	cors({
-		origin: "http://localhost:4200",
-	})
+	cors()
+	// 	{
+	// 	origin: "http://localhost:4200",
+	// }
 );
 
 app.get("/api", async (req, res) => {
