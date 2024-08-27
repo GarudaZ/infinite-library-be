@@ -58,7 +58,7 @@ describe("POST /api/users", () => {
 		expect(response.body.added_user.password === newUser.password).toBe(false);
 	});
 });
-describe.only("POST /api/users/login", () => {
+describe("POST /api/users/login", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const hashedPassword = await bcrypt.hash("securepassword", 10);
 
@@ -79,7 +79,6 @@ describe.only("POST /api/users/login", () => {
 			.post("/api/users/login")
 			.send(login)
 			.expect(200);
-		console.log(response.body);
 
 		expect(response.body.success).toBe("Logged in successfully");
 	});
@@ -174,7 +173,7 @@ describe("GET /api/user/:id/shelves", () => {
 
 		const newShelf1 = new Shelf({
 			user_id: savedUser._id,
-			name: "testshelf1",
+			shelf_name: "testshelf1",
 			books: [],
 		});
 
@@ -182,7 +181,7 @@ describe("GET /api/user/:id/shelves", () => {
 
 		const newShelf2 = new Shelf({
 			user_id: savedUser._id,
-			name: "testshelf2",
+			shelf_name: "testshelf2",
 			books: [],
 		});
 
@@ -199,7 +198,7 @@ describe("GET /api/user/:id/shelves", () => {
 		expect(response.body.shelves.length).toBe(2);
 		response.body.shelves.forEach((shelf) => {
 			expect(shelf).toHaveProperty("user_id");
-			expect(shelf).toHaveProperty("name");
+			expect(shelf).toHaveProperty("shelf_name");
 			expect(shelf).toHaveProperty("books");
 			expect(shelf.books).toBeInstanceOf(Array);
 			// });
@@ -219,7 +218,7 @@ describe("POST /api/users/:id/shelves", () => {
 
 		const newShelf = {
 			user_id: savedUser._id,
-			name: "testshelf",
+			shelf_name: "testshelf",
 			books: [],
 		};
 
@@ -230,7 +229,7 @@ describe("POST /api/users/:id/shelves", () => {
 		expect(response.body).toHaveProperty("added_shelf");
 		expect(response.body.added_shelf.user_id).toEqual(savedUser._id.toString());
 
-		expect(typeof response.body.added_shelf.name).toBe("string");
+		expect(typeof response.body.added_shelf.shelf_name).toBe("string");
 		expect(response.body.added_shelf.books).toBeInstanceOf(Array);
 	});
 });
@@ -247,7 +246,7 @@ describe("PATCH /api/shelves/:shelfId", () => {
 
 		const newShelf = new Shelf({
 			user_id: savedUser._id,
-			name: "testshelf",
+			shelf_name: "testshelf",
 			books: [],
 		});
 
@@ -274,7 +273,7 @@ describe("PATCH /api/shelves/:shelfId", () => {
 			savedUser._id.toString()
 		);
 
-		expect(typeof response.body.updated_shelf.name).toBe("string");
+		expect(typeof response.body.updated_shelf.shelf_name).toBe("string");
 		expect(typeof response.body.updated_shelf.books[0].added_at).toBe("string");
 
 		expect(
@@ -310,7 +309,7 @@ describe("GET /api/users/:id/shelves/books", () => {
 
 		const newShelf1 = new Shelf({
 			user_id: savedUser._id,
-			name: "testshelf1",
+			shelf_name: "testshelf1",
 			books: [{ book_id: savedBook._id, added_at: new Date() }],
 		});
 
@@ -318,7 +317,7 @@ describe("GET /api/users/:id/shelves/books", () => {
 
 		const newShelf2 = new Shelf({
 			user_id: savedUser._id,
-			name: "testshelf2",
+			shelf_name: "testshelf2",
 			books: [{ book_id: savedBook._id, added_at: new Date() }],
 		});
 

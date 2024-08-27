@@ -31,7 +31,7 @@ const Book = mongoose.model("Book", bookSchema);
 const shelfSchema = new mongoose.Schema(
 	{
 		user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-		name: { type: String, required: true },
+		shelf_name: { type: String, required: true },
 		books: [
 			{
 				book_id: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },

@@ -54,8 +54,6 @@ app.post("/api/users", createLimiter, async (req, res) => {
 
 app.post("/api/users/login", async (req, res) => {
 	const user = await User.findOne({ username: req.body.username });
-	console.log(user.password);
-	console.log(req.body.password);
 
 	if (user === null) {
 		res.status(400).json({ error: "no user found" });
