@@ -189,7 +189,7 @@ app.post("/api/books", async (req, res) => {
 		const insertedBook = await newBook.save();
 		res.status(201).json({ added_book: insertedBook });
 	} catch (error) {
-		res.status(400).send({ message: "invalid request" });
+		res.status(400).send({ message: "invalid request", error: error.message });
 	}
 });
 
