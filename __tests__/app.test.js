@@ -113,7 +113,7 @@ describe("GET /api/users/:id", () => {
 });
 
 //faker used to generate rand unique ISBNs
-describe("POST /api/books", () => {
+describe.only("POST /api/books", () => {
 	it("returns 201 status code and returns the JSON of the book add to the collection", async () => {
 		const newBook = {
 			title: "The Hitchhiker's Guide to the Galaxy",
@@ -140,6 +140,23 @@ describe("POST /api/books", () => {
 		expect(response.body.added_book.genres).toBeInstanceOf(Array);
 		expect(response.body.added_book.genres.length).toBeGreaterThan(0);
 		expect(typeof response.body.added_book.cover).toBe("string");
+	});
+	it("returns 400 code when submitting request with missing data", async () => {
+		const newBook = {
+			title: "The Hitchhiker's Guide to the Galaxy",
+			//author removed
+			// author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		};
+		const response = await request(app)
+			.post("/api/books")
+			.send(newBook)
+			.expect(400);
+		expect(response.body.message).toBe("invalid request");
 	});
 });
 

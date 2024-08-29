@@ -184,9 +184,13 @@ app.get("/api/books", async (req, res) => {
 });
 
 app.post("/api/books", async (req, res) => {
-	const newBook = new Book({ ...req.body });
-	const insertedBook = await newBook.save();
-	return res.status(201).json({ added_book: insertedBook });
+	try {
+		const newBook = new Book({ ...req.body });
+		const insertedBook = await newBook.save();
+		res.status(201).json({ added_book: insertedBook });
+	} catch (error) {
+		res.status(400).send({ message: "invalid request" });
+	}
 });
 
 module.exports = app;
