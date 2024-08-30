@@ -113,7 +113,7 @@ describe("GET /api/users/:id", () => {
 });
 
 //faker used to generate rand unique ISBNs
-describe.only("POST /api/books", () => {
+describe("POST /api/books", () => {
 	it("returns 201 status code and returns the JSON of the book add to the collection", async () => {
 		const newBook = {
 			title: "The Hitchhiker's Guide to the Galaxy",
@@ -175,6 +175,43 @@ describe("GET /api/books", () => {
 			expect(book.genres.length).toBeGreaterThan(0);
 			expect(typeof book.cover).toBe("string");
 		});
+	});
+});
+
+describe.only("GET /api/books/:isbn", () => {
+	it("returns book when passed a valid isbn", async () => {
+		const newBook = new Book({
+			title: "The Hitchhiker's Guide to the Galaxy",
+			author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		});
+
+		const savedBook = await newBook.save();
+
+		const response = await request(app)
+			.get(`/api/books/${savedBook.isbn}`)
+			.expect(200);
+		console.log(response.body);
+		expect(response.body).toHaveProperty("book_found");
+		const bookFound = response.body.book_found;
+		expect(bookFound._id).toEqual(savedBook._id.toString());
+		expect(bookFound.title).toEqual(savedBook.title);
+		expect(bookFound.author).toEqual(savedBook.author);
+		expect(bookFound.isbn).toEqual(savedBook.isbn);
+		expect(new Date(bookFound.published).toISOString()).toEqual(
+			savedBook.published.toISOString()
+		);
+		expect(bookFound.publisher).toEqual(savedBook.publisher);
+		expect(bookFound.genres).toEqual(savedBook.genres);
+		expect(bookFound.cover).toEqual(savedBook.cover);
+		expect(new Date(bookFound.created_at).toISOString()).toEqual(
+			savedBook.created_at.toISOString()
+		);
+		expect(bookFound.__v).toEqual(savedBook.__v);
 	});
 });
 

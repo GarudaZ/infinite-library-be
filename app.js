@@ -179,7 +179,22 @@ app.get("/api/books", async (req, res) => {
 		const books = await Book.find();
 		res.status(200).json({ books: books });
 	} catch (error) {
-		res.status(500).json({ error: "An error occurred fetching users" });
+		res.status(500).json({ error: "An error occurred fetching books" });
+	}
+});
+
+app.get("/api/books/:isbn", async (req, res) => {
+	try {
+		const { isbn } = req.params;
+		const book = await Book.findOne({ isbn: isbn });
+
+		res.status(200).json({ book_found: book });
+	} catch (error) {
+		if (error.status === 404) {
+			res.status(404).json({ error: "Book not found" });
+		} else {
+			res.status(500).json({ error: "An error occurred finding book" });
+		}
 	}
 });
 
