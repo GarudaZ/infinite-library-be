@@ -26,18 +26,6 @@ app.get("/api", async (req, res) => {
 	return res.json(endpoints);
 });
 
-//remove this when no longer needed for development
-app.get("/api/users", async (req, res) => {
-	try {
-		console.log("Fetching users...");
-		const users = await User.find();
-		console.log("Users fetched successfully");
-		res.status(200).json({ users: users });
-	} catch (error) {
-		res.status(500).json({ error: "An error occurred fetching users" });
-	}
-});
-
 app.post("/api/users", createLimiter, async (req, res) => {
 	try {
 		const hashedPassword = await bcrypt.hash(req.body.password, 10);
