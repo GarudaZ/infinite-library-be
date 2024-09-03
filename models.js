@@ -17,6 +17,7 @@ const bookSchema = new mongoose.Schema(
 		title: { type: String, required: true },
 		author: { type: String, required: true },
 		isbn: { type: String, required: true, unique: true },
+		lccn: { type: String, required: true },
 		published: { type: Date, required: true },
 		publisher: { type: String, required: true },
 		genres: { type: [String], required: true },
