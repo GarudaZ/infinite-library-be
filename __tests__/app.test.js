@@ -184,6 +184,7 @@ describe.only("GET /api/books/:isbn", () => {
 			title: "The Hitchhiker's Guide to the Galaxy",
 			author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(8),
 			published: "1979",
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
@@ -205,6 +206,7 @@ describe.only("GET /api/books/:isbn", () => {
 		expect(new Date(bookFound.published).toISOString()).toEqual(
 			savedBook.published.toISOString()
 		);
+		expect(bookFound.lccn).toEqual(savedBook.lccn);
 		expect(bookFound.publisher).toEqual(savedBook.publisher);
 		expect(bookFound.genres).toEqual(savedBook.genres);
 		expect(bookFound.cover).toEqual(savedBook.cover);
