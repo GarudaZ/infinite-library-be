@@ -15,12 +15,7 @@ const createLimiter = rateLimit({
 	max: 5,
 });
 
-app.use(
-	cors()
-	// 	{
-	// 	origin: "http://localhost:4200",
-	// }
-);
+app.use(cors());
 
 app.get("/api", async (req, res) => {
 	return res.json(endpoints);
@@ -28,6 +23,13 @@ app.get("/api", async (req, res) => {
 
 app.post("/api/users", createLimiter, async (req, res) => {
 	try {
+		const { username, password } = req.body;
+
+		if (!username || !password) {
+			return res
+				.status(400)
+				.json({ message: "Username and password are required" });
+		}
 		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		const newUser = new User({
 			username: req.body.username,
@@ -36,6 +38,11 @@ app.post("/api/users", createLimiter, async (req, res) => {
 		const insertedUser = await newUser.save();
 		return res.status(201).json({ added_user: insertedUser });
 	} catch (error) {
+		console.log(error);
+
+		if (error.code === 11000) {
+			return res.status(400).json({ message: "Username already exists" });
+		}
 		res.status(500).json({ error: "An error occurred adding user" });
 	}
 });
@@ -65,7 +72,6 @@ app.post("/api/users/login", async (req, res) => {
 	}
 });
 
-//middleware
 function authenticateToken(req, res, next) {
 	const authHeader = req.headers["authorization"];
 	const token = authHeader && authHeader.split(" ")[1];

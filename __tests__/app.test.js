@@ -38,7 +38,7 @@ describe("GET /api/users", () => {
 	});
 });
 
-describe("POST /api/users", () => {
+describe.only("POST /api/users", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const newUser = {
 			username: "testuser",
@@ -56,6 +56,32 @@ describe("POST /api/users", () => {
 		expect(response.body.added_user.username).toBe("testuser");
 		expect(typeof response.body.added_user.password).toBe("string");
 		expect(response.body.added_user.password === newUser.password).toBe(false);
+	});
+	it("returns 400 when a duplicate username is submitted", async () => {
+		const hashedPassword = await bcrypt.hash("securepassword", 10);
+
+		const newUser = new User({
+			username: "testuser",
+			password: hashedPassword,
+			shelves: [],
+		});
+
+		await newUser.save();
+
+		const response = await request(app)
+			.post("/api/users")
+			.send({ username: "testuser", password: hashedPassword })
+			.expect(400);
+		expect(response.body.message).toBe("Username already exists");
+	});
+	it("returns 400 when username or password are missing", async () => {
+		const hashedPassword = await bcrypt.hash("securepassword", 10);
+
+		const response = await request(app)
+			.post("/api/users")
+			.send({ password: hashedPassword })
+			.expect(400);
+		expect(response.body.message).toBe("Username and password are required");
 	});
 });
 describe("POST /api/users/login", () => {
@@ -178,7 +204,7 @@ describe("GET /api/books", () => {
 	});
 });
 
-describe.only("GET /api/books/:isbn", () => {
+describe("GET /api/books/:isbn", () => {
 	it("returns book when passed a valid isbn", async () => {
 		const newBook = new Book({
 			title: "The Hitchhiker's Guide to the Galaxy",
