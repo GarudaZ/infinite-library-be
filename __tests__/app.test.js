@@ -423,6 +423,8 @@ describe("GET /api/users/:id/shelves/books", () => {
 
 describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
 	it("return 200 status and json of the updated user book when passed one updated category", async () => {
+		const updates = { reviews: "a review" };
+
 		const newUser = new User({
 			username: "testuser",
 			password: "securepassword",
@@ -458,7 +460,7 @@ describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
 		});
 
 		const savedShelf = await newShelf.save();
-		const body = { shelfId: savedShelf._id, reviews: "a review" };
+		const body = { updates, shelfId: savedShelf._id };
 
 		const response = await request(app)
 			.patch(`/api/users/${savedUser._id}/shelves/books/${savedBook._id}`)
@@ -469,7 +471,7 @@ describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
 		expect(response.body.updated_book.book_id).toEqual(
 			savedShelf.books[0].book_id.toString()
 		);
-		expect(response.body.updated_book.reviews).toEqual(body.reviews);
+		expect(response.body.updated_book.reviews).toEqual(updates.reviews);
 		expect(response.body.updated_book.tags).toEqual([]);
 		expect(response.body.updated_book._id).toEqual(
 			savedShelf.books[0]._id.toString()
