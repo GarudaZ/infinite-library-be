@@ -154,6 +154,48 @@ app.get("/api/users/:id/shelves/books", async (req, res) => {
 	}
 });
 
+app.patch("/api/users/:userId/shelves/books/:bookId", async (req, res) => {
+	console.log("patching");
+
+	const { userId, bookId } = req.params;
+	const updateData = req.body;
+	console.log(updateData.shelfId);
+
+	const validKeys = ["reviews", "tags", "shelfId"];
+	Object.keys(updateData).forEach((key) => {
+		if (!validKeys.includes(key)) {
+			return res
+				.status(400)
+				.send({ error: "attempting to update invalid key" });
+		}
+	});
+	const shelf = await Shelf.findById(updateData.shelfId);
+	// .populate();
+	if (!shelf) {
+		return res.status(404).send({ error: "Shelf not found" });
+	}
+	console.log(shelf.books[0].book_id.toString());
+
+	const bookForUpdate = shelf.books.find((book) => {
+		return book.book_id.toString() === bookId;
+	});
+	console.log(bookId);
+
+	console.log(bookForUpdate);
+	if (!bookForUpdate) {
+		return res.status(404).send({ error: "book not found" });
+	}
+	const updatedBook = bookForUpdate;
+	if (updateData.reviews) {
+		updatedBook.reviews = updateData.reviews;
+	}
+	if (updateData.tags) {
+		updatedBook.tags = updateData.tags;
+	}
+	await shelf.save();
+	res.status(200).send({ updated_book: updatedBook });
+});
+
 app.patch("/api/shelves/:shelfId", async (req, res) => {
 	const { shelfId } = req.params;
 	const { book_id } = req.body;

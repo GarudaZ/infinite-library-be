@@ -29,16 +29,8 @@ describe("GET /api", () => {
 		expect(response.body).toEqual(endpoints);
 	});
 });
-//endpoint to be removed
-describe("GET /api/users", () => {
-	it("returns an array of users", async () => {
-		const response = await request(app).get("/api/users").expect(200);
-		expect(response.body).toHaveProperty("users");
-		expect(response.body.users).toBeInstanceOf(Array);
-	});
-});
 
-describe.only("POST /api/users", () => {
+describe("POST /api/users", () => {
 	it("returns 201 status code and returns the JSON of the user add to the collection", async () => {
 		const newUser = {
 			username: "testuser",
@@ -366,7 +358,6 @@ describe("PATCH /api/shelves/:shelfId", () => {
 	});
 });
 
-//get all shelves populated with books return combined
 describe("GET /api/users/:id/shelves/books", () => {
 	it("returns 200 status and all the shelves and books from the user", async () => {
 		const newBook = new Book({
@@ -427,5 +418,61 @@ describe("GET /api/users/:id/shelves/books", () => {
 				expect(bookEntry).toHaveProperty("added_at");
 			});
 		});
+	});
+});
+
+describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
+	it("return 200 status and json of the updated user book when passed one updated category", async () => {
+		const newUser = new User({
+			username: "testuser",
+			password: "securepassword",
+			shelves: [],
+		});
+
+		const savedUser = await newUser.save();
+
+		const newBook = new Book({
+			title: "The Hitchhiker's Guide to the Galaxy",
+			author: "Douglas Adams",
+			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(10),
+			published: "1979",
+			publisher: "Pan Books",
+			genres: ["Comedy", "Science Fiction"],
+			cover: "https://covers.openlibrary.org/b/id/8594906-L.jpg",
+		});
+
+		const savedBook = await newBook.save();
+
+		const newShelf = new Shelf({
+			user_id: savedUser._id,
+			shelf_name: "testshelf",
+			books: [
+				{
+					book_id: savedBook._id,
+					note: "",
+					reviews: "",
+					tags: [],
+				},
+			],
+		});
+
+		const savedShelf = await newShelf.save();
+		const body = { shelfId: savedShelf._id, reviews: "a review" };
+
+		const response = await request(app)
+			.patch(`/api/users/${savedUser._id}/shelves/books/${savedBook._id}`)
+			.send(body)
+			.expect(200);
+		expect(response.body).toHaveProperty("updated_book");
+		expect(response.body.updated_book.reviews).toBe("a review");
+		expect(response.body.updated_book.book_id).toEqual(
+			savedShelf.books[0].book_id.toString()
+		);
+		expect(response.body.updated_book.reviews).toEqual(body.reviews);
+		expect(response.body.updated_book.tags).toEqual([]);
+		expect(response.body.updated_book._id).toEqual(
+			savedShelf.books[0]._id.toString()
+		);
 	});
 });
