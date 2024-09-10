@@ -167,6 +167,7 @@ describe("POST /api/books", () => {
 			//author removed
 			// author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(10),
 			published: "1979",
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
@@ -176,7 +177,9 @@ describe("POST /api/books", () => {
 			.post("/api/books")
 			.send(newBook)
 			.expect(400);
-		expect(response.body.message).toBe("invalid request");
+		expect(response.body.message).toBe(
+			"Book validation failed: author: Path `author` is required."
+		);
 	});
 });
 

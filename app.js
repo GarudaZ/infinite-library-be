@@ -41,7 +41,7 @@ app.post("/api/users", createLimiter, async (req, res) => {
 		if (error.code === 11000) {
 			return res.status(400).json({ message: "Username already exists" });
 		}
-		res.status(500).json({ error: "An error occurred adding user" });
+		next(error);
 	}
 });
 
@@ -220,14 +220,24 @@ app.get("/api/books/:isbn", async (req, res) => {
 	}
 });
 
-app.post("/api/books", async (req, res) => {
+app.post("/api/books", async (req, res, next) => {
 	try {
 		const newBook = new Book({ ...req.body });
 		const insertedBook = await newBook.save();
 		res.status(201).json({ added_book: insertedBook });
 	} catch (error) {
-		res.status(400).send({ message: "invalid request", error: error.message });
+		if (error.code === 11000) {
+			return res.status(400).send({ message: "Duplicate book entry" });
+		}
+		if (!error.statusCode) {
+			res.status(400).send({ message: error.message });
+		}
+		next(error);
 	}
+});
+
+app.use((err, req, res, next) => {
+	res.status(err.statusCode).send({ message: err.message });
 });
 
 app.all("*", (request, response, next) => {
