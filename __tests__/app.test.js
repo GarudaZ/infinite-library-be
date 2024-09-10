@@ -137,6 +137,7 @@ describe("POST /api/books", () => {
 			title: "The Hitchhiker's Guide to the Galaxy",
 			author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(10),
 			published: "1979",
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
@@ -153,6 +154,7 @@ describe("POST /api/books", () => {
 		expect(typeof response.body.added_book.title).toBe("string");
 		expect(typeof response.body.added_book.author).toBe("string");
 		expect(typeof response.body.added_book.isbn).toBe("string");
+		expect(typeof response.body.added_book.lccn).toBe("string");
 		expect(typeof response.body.added_book.published).toBe("string");
 		expect(typeof response.body.added_book.publisher).toBe("string");
 		expect(response.body.added_book.genres).toBeInstanceOf(Array);
@@ -214,7 +216,6 @@ describe("GET /api/books/:isbn", () => {
 		const response = await request(app)
 			.get(`/api/books/${savedBook.isbn}`)
 			.expect(200);
-		console.log(response.body);
 		expect(response.body).toHaveProperty("book_found");
 		const bookFound = response.body.book_found;
 		expect(bookFound._id).toEqual(savedBook._id.toString());
@@ -330,6 +331,7 @@ describe("PATCH /api/shelves/:shelfId", () => {
 			title: "The Hitchhiker's Guide to the Galaxy",
 			author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(10),
 			published: "1979",
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
@@ -364,6 +366,7 @@ describe("GET /api/users/:id/shelves/books", () => {
 			title: "The Hitchhiker's Guide to the Galaxy",
 			author: "Douglas Adams",
 			isbn: faker.string.numeric(10),
+			lccn: faker.string.numeric(10),
 			published: "1979",
 			publisher: "Pan Books",
 			genres: ["Comedy", "Science Fiction"],
@@ -421,7 +424,7 @@ describe("GET /api/users/:id/shelves/books", () => {
 	});
 });
 
-describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
+describe("PATCH /api/users/:userId/shelves/books/:bookId", () => {
 	it("return 200 status and json of the updated user book when passed one updated category", async () => {
 		const updates = { reviews: "a review" };
 
@@ -476,5 +479,11 @@ describe.only("PATCH /api/users/:userId/shelves/books/:bookId", () => {
 		expect(response.body.updated_book._id).toEqual(
 			savedShelf.books[0]._id.toString()
 		);
+	});
+});
+describe("GET /otherEndpoint", () => {
+	it("should return 404 when a call is made to an invalid endpoint", async () => {
+		const response = await request(app).get(`/otherEndpoint`).expect(404);
+		expect(response.body.message).toBe("Endpoint not found");
 	});
 });

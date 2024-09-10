@@ -38,8 +38,6 @@ app.post("/api/users", createLimiter, async (req, res) => {
 		const insertedUser = await newUser.save();
 		return res.status(201).json({ added_user: insertedUser });
 	} catch (error) {
-		console.log(error);
-
 		if (error.code === 11000) {
 			return res.status(400).json({ message: "Username already exists" });
 		}
@@ -55,9 +53,6 @@ app.post("/api/users/login", async (req, res) => {
 	}
 	try {
 		if (await bcrypt.compare(req.body.password, user.password)) {
-			console.log("getting token");
-			console.log(user);
-
 			const tokenUserDetails = { username: user.username, user_id: user._id };
 
 			const accessToken = jwt.sign(tokenUserDetails, process.env.JWT_SECRET);
@@ -87,8 +82,6 @@ function authenticateToken(req, res, next) {
 }
 
 app.get("/api/users/:id", authenticateToken, async (req, res) => {
-	console.log(req.user);
-
 	const { id } = req.params;
 	try {
 		const user = await User.findById(id);
@@ -237,6 +230,9 @@ app.post("/api/books", async (req, res) => {
 	}
 });
 
+app.all("*", (request, response, next) => {
+	response.status(404).send({ message: "Endpoint not found" });
+});
 module.exports = app;
 
 const start = async () => {
